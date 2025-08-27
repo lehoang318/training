@@ -1,9 +1,10 @@
 @startuml
 
 node pc as "Computer (host)" {
-    agent ssh as "ssh (Client)"
-    agent gdb as "QNX GDB"
     node ide as "QNX Momentics"
+    agent gdb as "QNX GDB"
+    artifact compiler as "qcc/q++"
+    agent ssh as "ssh (Client)"
     node t32 as "TRACE32"
 }
 
@@ -20,14 +21,17 @@ node debugger as "Lauterbach Debugger"
 
 ssh -- sshd: TCP/IP
 
-ide -- qconn: TCP/IP or Serial
-card note as "[QNX Momentics IDE] A serial connection allows the IDE to debug a program but not to use any profiling or analysis tools"
+ide -- qconn: TCP/IP or //Serial//*
 qconn -- pdebug: spawn
 
-gdb -- pdebug: TCP/IP or Serial
+gdb -- pdebug: TCP/IP or //Serial//*
 pdebug --> devc_pty: <<required>>
 
 t32 -- debugger
 debugger -- board: JTAG
+
+note top of ide
+[QNX Momentics IDE] A serial connection allows the IDE to debug a program but not to use any profiling or analysis tools
+end note
 
 @enduml

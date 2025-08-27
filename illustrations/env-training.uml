@@ -1,0 +1,15 @@
+@startuml
+
+node pc as "Computer (host)" {
+    node os as "Windows OS" {
+        node wsl as "[VM] Unix-like OS" {
+            package "build-essential" {
+                collections "GNU Compiler Collection (gcc/g++)"
+                artifact make as "GNU Make"
+                artifact libc as "libc6-dev"
+            }
+        }
+    }
+}
+
+@enduml
