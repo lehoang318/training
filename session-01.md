@@ -1,6 +1,6 @@
 # QNX - Session 1
 * Development Environment: [env-development.uml](./illustrations/env-development.uml)
-* Training environment:  [env-training.uml](./illustrations/env-training.uml)
+* Training Environment:  [env-training.uml](./illustrations/env-training.uml)
 * References
   * [QNX Documentation](https://www.qnx.com/developers/docs/8.0/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
   * [QNX Community](https://www.qnx.com/developers/community.html)
@@ -180,3 +180,4 @@ Create an application named `process_info` that inspects a running process based
 **Notes**:  
 - The application should handle errors gracefully (e.g., invalid argument count, non-integer PID, or non-existent process) and provide appropriate error messages.  
 - Use the `/proc/<pid>` filesystem to gather the required process information.
+
