@@ -73,8 +73,34 @@
   * Manual compilation and installation
 
 * [File permissions](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/files_PERMISSIONS.html)
+  ```
+  $ ll /usr/lib
+    total 23836
+    drwxr-xr-x 75 root root     4096 Feb 28  2025 ./
+    drwxr-xr-x 14 root root     4096 Oct 26  2022 ../
+    drwxr-xr-x  2 root root     4096 Feb 28  2025 apparmor/
+    drwxr-xr-x  5 root root     4096 Feb 28  2025 apt/
+    ...
+    drwxr-xr-x  2 root root     4096 Feb 28  2025 cloud-init/
+    -rwxr-xr-x  1 root root     1075 Dec  8  2021 cnf-update-db*
+    ...
+
+  $ ll /usr/bin/gcc
+    lrwxrwxrwx 1 root root 6 Aug  5  2021 /usr/bin/gcc -> gcc-11*
+
+  $ ll /usr/bin/gcc-11
+    lrwxrwxrwx 1 root root 23 May 13  2023 /usr/bin/gcc-11 -> x86_64-linux-gnu-gcc-11*
+  
+  $ ll /usr/bin/x86_64-linux-gnu-gcc-11
+    -rwxr-xr-x 1 root root 928584 May 13  2023 /usr/bin/x86_64-linux-gnu-gcc-11*
+  ```
+
   * Is it a regular file or a directory or a symbolic link?
   * What could `Owner`/`Owner Group`/`Others` do with the file?
+  * Users & Groups
+    * `/etc/group`: `group_name:password:GID:user_list`
+    * `/etc/passwd`: `name:password:UID:GID:GECOS:directory:shell`
+
   * Note: directories, regular files or symbolic links are all considered as `Files`
     ```
     In a QNX OS system, almost everything is a file; devices, data, and even services are all typically represented as files.
