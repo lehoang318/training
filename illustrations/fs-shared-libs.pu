@@ -1,0 +1,24 @@
+@startuml
+
+
+collections exec as "Executables"
+
+package headers as "Headers" {
+    collections h_usr as "Users"
+    collections h_posix as "POSIX"
+    collections h_nposix as "Non-POSIX"
+}
+
+exec -[dashed]right-> headers: <<include at compile time>>
+
+package dlibs as "Shared Libraries" {
+    collections d_usr as "Users"
+    collections d_posix as "POSIX"
+    collections d_nposix as "Non-POSIX"
+}
+
+
+exec -[dashed]down-> dlibs: <<requires at link/runtime>>
+
+
+@enduml

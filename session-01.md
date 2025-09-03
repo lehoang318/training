@@ -1,6 +1,6 @@
 # QNX - Session 1
-* Development Environment: [env-development.uml](./illustrations/env-development.uml)
-* Training Environment:  [env-training.uml](./illustrations/env-training.uml)
+* Development Environment: [env-development.pu](./illustrations/env-development.pu)
+* Training Environment:  [env-training.pu](./illustrations/env-training.pu)
 * References
   * [QNX Documentation](https://www.qnx.com/developers/docs/8.0/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
   * [QNX Community](https://www.qnx.com/developers/community.html)
@@ -47,7 +47,7 @@
     * Where is `printf` implemented? [Linux] `libc`
     * Is its implementation embedded in the application? No
 
-  * How to link executable with a shared library?
+  * How to link an executable with a shared library?
     ```
     gcc –o <executable file path> <object files> –L<look-up path> –l<library name>
     ```
@@ -61,6 +61,7 @@
     libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000074896c200000)
     /lib64/ld-linux-x86-64.so.2 (0x000074896c59f000)
     ```
+
   * References
     * [How does it work on QNX?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/dll.html)
     * [C Library Reference](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/full_safety_a.html)
@@ -71,8 +72,6 @@
   * App. Store & Package Management => N/A
   * Manual compilation and installation
 
-* [Discussion] Is it possible to change/install new SWCs at runtime in AUTOSAR Systems?
-
 * [File permissions](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/files_PERMISSIONS.html)
   * Is it a regular file or a directory or a symbolic link?
   * What could `Owner`/`Owner Group`/`Others` do with the file?
@@ -81,11 +80,64 @@
     In a QNX OS system, almost everything is a file; devices, data, and even services are all typically represented as files.
     ```
 
+* Open Discussions: is it possible? and how to implement those concept in AUTOSAR System?
+  * Filesystem
+  * Install new SWCs at runtime
+  * Shared libraries
+
 ## Shell/Command Interpreter
-* What is Shell?
-  * [Interactions](./illustrations/shell-interactions.uml)
-  * [Acvities](./illustrations/shell-activities.uml)
-  * [QNX Shells](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/cmdline_Shell.html): `uesh`/`esh`/`fesh`/`ksh`
+* What is Shell/Command Line Interpreter?
+  * [Interactions](./illustrations/shell-interactions.pu)
+  * [Acvities](./illustrations/shell-activities.pu)
+  * [QNX Shells](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/cmdline_Shell.html): `ksh` (default)/`uesh`/`esh`/`fesh`
+
+  * [The first line of a script can identify the interpreter to use](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/scripts_First_line.html): 
+    ```
+    #! interpreter [arg]
+    <contents>
+    ```
+
+    * Example: `#! /bin/sh`
+
+* Startup behaviors
+  * [When ksh starts as a login shell, it executes these profiles, if they exist and are executable](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_LoggingIn.html)
+    1. [/etc/profile](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_etc_profile.html), which then shall invoke all scripts in `/etc/profile.d/`
+    2. [${HOME}/.profile](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_profile.html)
+  * For non-login shell, if the script pointed by ${ENV} exists and is executable, it shall be executed
+  * At BSP level, refer to [Startup Programs](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.building/topic/startup/startup_about.html)
+
+* Redirect I/O
+  * Special File Descriptors: stdin (0), stdout(1), and stderr(2)
+    ```
+    $ ll /proc/self/fd
+      total 0
+      dr-x------ 2 k318 k318  4 Sep  3 22:06 ./
+      dr-xr-xr-x 9 k318 k318  0 Sep  3 22:06 ../
+      lrwx------ 1 k318 k318 64 Sep  3 22:06 0 -> /dev/pts/0
+      lrwx------ 1 k318 k318 64 Sep  3 22:06 1 -> /dev/pts/0
+      lrwx------ 1 k318 k318 64 Sep  3 22:06 2 -> /dev/pts/0
+    ```
+
+  * Redirect output to a file: `ll /proc/self/fd > ./run.log`
+
+  * Redirect input
+    ```
+    $ cat ./run.log
+      total 0
+      dr-x------ 2 k318 k318  4 Sep  3 22:09 ./
+      dr-xr-xr-x 9 k318 k318  0 Sep  3 22:09 ../
+      lrwx------ 1 k318 k318 64 Sep  3 22:09 0 -> /dev/pts/0
+      l-wx------ 1 k318 k318 64 Sep  3 22:09 1 -> /home/k318/wspace/run.log
+      lrwx------ 1 k318 k318 64 Sep  3 22:09 2 -> /dev/pts/0
+      lr-x------ 1 k318 k318 64 Sep  3 22:09 3 -> /proc/93/fd/
+
+    $ grep lr < ./run.log
+      lrwx------ 1 k318 k318 64 Sep  3 22:09 0 -> /dev/pts/0
+      lrwx------ 1 k318 k318 64 Sep  3 22:09 2 -> /dev/pts/0
+      lr-x------ 1 k318 k318 64 Sep  3 22:09 3 -> /proc/93/fd/
+    ```
+
+  * Pipe: `ll /proc/self/fd | grep lr`
 
 * How to locate executables? => `${PATH}`
     ```
@@ -105,14 +157,13 @@
   * `env`
   * `pidin`, `ps`
   * `which`
-
-* [What happens when you log in?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_LoggingIn.html)
-  * [/etc/profile](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_etc_profile.html)
-  * [${HOME}/.profile](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/environment_profile.html)
-
-* [Startup Programs](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.building/topic/startup/startup_about.html)
+  * `.`: to read and execute the contents of a file within the current shell session without creating a new process
+    * Note: Environment Variables exist within the scope of a process (its child processes shall inherit them)
+      => After `. <shell script>`, any changes in Environment Variables shall be persisted in the current shell.
 
 ## POSIX API
+* [Context](./illustrations/fs-shared-libs.pu)
+
 * Application Programming Interfaces
   * Process creatation & control
     ```
@@ -180,4 +231,3 @@ Create an application named `process_info` that inspects a running process based
 **Notes**:  
 - The application should handle errors gracefully (e.g., invalid argument count, non-integer PID, or non-existent process) and provide appropriate error messages.  
 - Use the `/proc/<pid>` filesystem to gather the required process information.
-
