@@ -1,8 +1,0 @@
-@startuml
-
-:Breaks the command into tokens;
-:Identify executable and arguments;
-:Locate the executable;
-:Invoke the executable with input arguments;
-
-@enduml

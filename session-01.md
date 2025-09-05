@@ -1,6 +1,7 @@
 # QNX - Session 1
-* Development Environment: [env-development.pu](./illustrations/env-development.pu)
-* Training Environment:  [env-training.pu](./illustrations/env-training.pu)
+* [Development Environment](./illustrations/env-development.md)
+* [Training Environment](./illustrations/env-training.md)
+
 * References
   * [QNX Documentation](https://www.qnx.com/developers/docs/8.0/#com.qnx.doc.qnxsdp.nav/topic/bookset.html)
   * [QNX Community](https://www.qnx.com/developers/community.html)
@@ -31,6 +32,7 @@
   * `/dev/*`: Device files
   * `/proc/*`: Processes information
     * `/proc/<PID>/status`
+    * `/proc/self/`
 
 * [Dynamic-linked/Shared Libraries](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/dll.html)
 
@@ -61,6 +63,8 @@
     libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000074896c200000)
     /lib64/ld-linux-x86-64.so.2 (0x000074896c59f000)
     ```
+
+  * [Executables & Shared Libraries](./illustrations/fs-shared-libs.md)
 
   * References
     * [How does it work on QNX?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/dll.html)
@@ -112,11 +116,8 @@
   * Shared libraries
 
 ## Shell/Command Interpreter
-* What is Shell/Command Line Interpreter?
-  * [Interactions](./illustrations/shell-interactions.pu)
-  * [Acvities](./illustrations/shell-activities.pu)
+* [What is Shell/Command Line Interpreter?](./illustrations/shell.md)
   * [QNX Shells](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/cmdline_Shell.html): `ksh` (default)/`uesh`/`esh`/`fesh`
-
   * [The first line of a script can identify the interpreter to use](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/scripts_First_line.html): 
     ```
     #! interpreter [arg]
@@ -188,7 +189,7 @@
       => After `. <shell script>`, any changes in Environment Variables shall be persisted in the current shell.
 
 ## POSIX API
-* [Context](./illustrations/fs-shared-libs.pu)
+* [Executables & Shared Libraries](./illustrations/fs-shared-libs.md)
 
 * Application Programming Interfaces
   * Process creatation & control
