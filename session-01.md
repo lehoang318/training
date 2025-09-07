@@ -214,7 +214,7 @@
 ## Sample Application
 ```
 $ cd samples/
-$ make
+$ make s01_sample
 gcc -c sys_info.c
 gcc -o sys_info sys_info.o
 
@@ -237,24 +237,24 @@ Create an application named `process_info` that inspects a running process based
 
 **Usage**:  
 `process_info <pid>`  
-- `<pid>`: The identifier of a running process (must be an integer).
+* `<pid>`: The identifier of a running process (must be an integer).
 
 **Requirements**:  
 1. **Argument Validation**:  
-   - Verify that exactly one command-line argument is provided.  
-   - Ensure the argument is a valid integer representing a process ID.
+  * Verify that exactly one command-line argument is provided.  
+  * Ensure the argument is a valid integer representing a process ID.
 
 2. **Process Validation**:  
-   - Confirm that a process with the specified PID exists.
+  * Confirm that a process with the specified PID exists.
 
 3. **Information Display**:  
-   - If the PID is valid, retrieve data from `/proc/<pid>` and display:  
-     - Executable name of the process.  
-     - Size of the data segment.  
-     - Size of the stack.
-     - Threads: a list of threads belong to the process
-       - Format for each thread: `<Thread ID> | <Scheduling Policy> | <Priority> | <CPU Time>`
+  * If the PID is valid, retrieve data from `/proc/<pid>` and display:  
+    * Executable name of the process.  
+    * Size of the data segment.  
+    * Size of the stack.
+    * Threads: a list of threads belong to the process
+      * Format for each thread: `<Thread ID> | <Scheduling Policy> | <Priority> | <CPU Time>`
 
 **Notes**:  
-- The application should handle errors gracefully (e.g., invalid argument count, non-integer PID, or non-existent process) and provide appropriate error messages.  
-- Use the `/proc/<pid>` filesystem to gather the required process information.
+* The application should handle errors gracefully (e.g., invalid argument count, non-integer PID, or non-existent process) and provide appropriate error messages.  
+* Use the `/proc/<pid>` filesystem to gather the required process information.
