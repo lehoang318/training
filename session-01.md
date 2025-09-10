@@ -214,7 +214,7 @@
 ## Sample Application
 ```
 $ cd samples/
-$ make s01_sample
+$ make sys_info
 gcc -c sys_info.c
 gcc -o sys_info sys_info.o
 
