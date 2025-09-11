@@ -1,15 +1,37 @@
 # QNX - Session 2
 * [Memory Management](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/memory_MEMMGT_.html)
-  * Memory Management Unit
-  * Translation Look-aside Buffer (TLB)
-  * Mapping Virtual-Physical
-  * How to access peripherals' registers?
+  * Memory layout for a typical process
 
-* Process
+    <img src="https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/images/procaddr.svg" width="50%" height="50%">
 
-* Signals (~SW Interrupts)
+    * Heap & dynamic memory allocation
+    * Stack (each thread has a separated stack)
+    * Shared objects
+    * Shared libraries
 
-* IPC
+  * Cross processes memory access?
+    ```
+    $ cd samples
+    $ make clean
+    $ make memory
+    $ setarch $(uname -m) -R ./memory
+    ```
+
+  * Virtual memory
+
+    <img src="https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/images/virtual_memory.svg" width="75%" height="75%">
+
+    * [Memory Management Unit](https://developer.arm.com/documentation/101811/0104/The-Memory-Management-Unit--MMU-)
+
+    * [Mapping Virtual-Physical](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/m/mmap.html)
+      
+      => How to access peripherals' registers?
+
+* Process (TODO)
+
+* Signals (TODO)
+
+* IPC (in-progress)
   * Message passing (introduction only)
   * Shared memory
     * Flows
@@ -46,6 +68,6 @@
 
     > System processes are essentially indistinguishable from any user-written program—they use the same public API and kernel services available to any (suitably privileged) user process.
 
-  * Kernel calls
+  * Kernel calls (TODO)
 
 * Practice #2: IPC with Shared Memory
