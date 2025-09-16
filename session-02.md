@@ -27,7 +27,7 @@
       
       => How to access peripherals' registers?
 
-* Process
+* Processes
   * [Definitions](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/overview_Definitions.html)
     > A thread is a single flow of execution or control.
 
@@ -35,57 +35,83 @@
 
     > Each process lives in its own protected memory space. (QNX/An application as a set of processes)
 
-  * Creation
-    ```
-    #include <stdlib.h>
-    int system( const char *command );
-    ```
+  * [How do we create/spawn a process?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.getting_started/topic/s1_procs_Starting_a_process.html)
+    * [P-Recommendation] ?
 
-  * Termination
-    ```
-    #include <stdlib.h>
-    void exit( int status );
-    ```
+  * [When will processes be terminated?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/process_PROCTERM.html)
 
-    * API
-    * Resource cleanup
-    * Exit Code
-      * Why do we care? [Safety] Fault detection & reaction
-      * In simple cases, Shellscript could be used to handle the termination of a process
-        ```
-        <execute a command>
+  * [How do we detect the termination of a process/ process group?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/process_PROCDETECTTERM.html)
+    * Why do we care? => **[Safety] Fault detection & reaction**
+      * Crashed
+      * Hang/Freeze
 
-        if [ $? -ne 0 ]; then
-          echo "Error: The command failed."
-        else
-          echo "Success: The command ran successfully."
-        fi
-        ```
+    * How did the process terminate?
+      * What did happen to the process' resources
+      * **Exit Code/Termination Status**
+        * [Programming] [Status Macros](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/w/wait.html#wait__StatusMacros)
+        * [Shell Script] `$?`
 
-      * C Progams
-        * Status macros
-          * `WIFEXITED(stat_val)`
-          * `WEXITSTATUS(stat_val)`
+    * `waitpid(pid, &status, WNOHANG)`
 
-        * Child processes created via `system()`
-        * Child processes created via `exec()`
-          ```
-          #include <sys/types.h>
-          #include <sys/wait.h>
+  * What will happend if a child process terminates before its parent does?
+    * `posix_spawn()` & `POSIX_SPAWN_NOZOMBIE`
 
-          // Suspends execution of the calling thread until one of its children terminates.
-          pid_t wait(int * stat_loc); // Any child process
-          pid_t waitpid(pid_t pid, int * stat_loc, int options);  // Note: Group ID!
-          ```
+* [Inter-process Communication](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc.html)
+  * [**Signals**](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Signals.html)
+    * [By default, how does a process react when it receives a signal?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Signal_summary.html)
 
-* Signals (TODO)
+      > The default action for most signals is to terminate the process.
 
-* IPC (in-progress)
-  * Message passing (introduction only)
-  * Shared memory
-    * Flows
-      * Owner setup shared memory area: size & characteristics (access permissions)
-      * Peers map the shared memory area to their vm space
+
+    * [How do we override the default reactions?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/signal.html)
+      ```
+      #include <signal.h>
+
+      typedef typeof(void (int))  *sighandler_t;
+      sighandler_t signal(int signum, sighandler_t handler);                          // ANSI C99 & POSIX
+
+      int sigaction(int sig, const struct sigaction * act, struct sigaction * oact);  // POSIX
+      ```
+
+    * How do we send a signal to a [process](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/k/kill.html)/[thread](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_kill.html)?
+
+    * Is it possible to block signals? [sigprocmask()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/sigprocmask.html)
+
+    * How do we detect whether a process was terminated by a signal?
+      * `WIFSIGNALED(stat_val)`: Evaluates to nonzero value if the child process terminated from reception of a signal that wasn't caught.
+      * `WTERMSIG(stat_val)`: Evaluates to the number of the signal that terminated the child process if the value of `WIFSIGNALED(stat_val)` is nonzero.
+
+    * Note: [The eight special signals cannot be ignored or caught](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Special_signals.html).
+
+  * [**Shared memory**](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Shared_memory.html)
+    > ... access to shared memory is in itself unsynchronized.
+
+    > Shared memory is therefore most efficient when used for updating large amounts of data as a block.
+
+    * Workflow
+      * Host
+        1. Create a shared memory region: [shm_open()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/shm_open.html)
+          > When a new shared memory object is created, the size of the object is set to zero.
+
+        2. Set the memory object's size: [ftruncate()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/f/ftruncate.html)
+        3. Map the shared memory object into the virtual address space of the calling process: [mmap()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_mmap.html)
+        4. Read/Write the shared memory region
+        5. Close the file descriptor allocated by `shm_open()` when it is no longer needed: [close()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/c/close.html)
+        6. Unlink the memory object to completely remove it: [shm_unlink](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/shm_unlink.html)
+
+          * Note: Step #6 could be done by another process.
+
+      * Guest
+        1. Open the existing shared memory object using its path name
+        2. Map the shared memory object into the virtual address space of the calling process
+        3. Read/Write the shared memory region
+        4. Close the file descriptor allocated by `shm_open()` when it is no longer needed
+
+  * **Socket** => [session-03.md](./session-03.md)
+  * *Pipes*
+  * *FIFOs*
+  * *POSIX message queues*
+  * *Message passing*
 
 * [Time](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/timing_Time_functions.html)
   * `CLOCK_MONOTONIC`: a monotonic count of time since the kernel was initialized
@@ -117,6 +143,8 @@
 
     > System processes are essentially indistinguishable from any user-written program—they use the same public API and kernel services available to any (suitably privileged) user process.
 
-  * Kernel calls (TODO)
-
-* Practice #2: IPC with Shared Memory
+## Sample Application
+* One starter process spawn a list of child processes
+  * Send signal to control execution flows of the child processes
+  * Detect the termination of child processes
+  * Hanle hanging child processes
