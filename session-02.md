@@ -96,16 +96,18 @@
         2. Set the memory object's size: [ftruncate()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/f/ftruncate.html)
         3. Map the shared memory object into the virtual address space of the calling process: [mmap()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_mmap.html)
         4. Read/Write the shared memory region
-        5. Close the file descriptor allocated by `shm_open()` when it is no longer needed: [close()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/c/close.html)
-        6. Unlink the memory object to completely remove it: [shm_unlink](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/shm_unlink.html)
+        5. Unmap the shared memory object from the virtual address space of the calling process: [munmap()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/m/munmap.html)
+        6. Close the file descriptor allocated by `shm_open()` when it is no longer needed: [close()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/c/close.html)
+        7. Unlink the memory object to completely remove it: [shm_unlink](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/shm_unlink.html)
 
-          * Note: Step #6 could be done by another process.
+          * Note: `Unlink` could be done by another process.
 
       * Guest
         1. Open the existing shared memory object using its path name
         2. Map the shared memory object into the virtual address space of the calling process
         3. Read/Write the shared memory region
-        4. Close the file descriptor allocated by `shm_open()` when it is no longer needed
+        4. Unmap the shared memory object from the virtual address space of the calling process: [munmap()](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/m/munmap.html)
+        5. Close the file descriptor allocated by `shm_open()` when it is no longer needed
 
   * **Socket** => [session-03.md](./session-03.md)
   * *Pipes*
@@ -142,6 +144,9 @@
     * TCP/IP
 
     > System processes are essentially indistinguishable from any user-written program—they use the same public API and kernel services available to any (suitably privileged) user process.
+  
+  * [Understanding System Limits](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.user_guide/topic/limits.html)
+    * [How do we get/set the limit on a system resource?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/prlimit.html)
 
 ## Sample Application
 * One starter process spawn a list of child processes
