@@ -56,6 +56,10 @@
   * What will happend if a child process terminates before its parent does?
     * `posix_spawn()` & `POSIX_SPAWN_NOZOMBIE`
 
+  * process's ability
+    * https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/procmgr_ability.html
+    * https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/process_Privileges.html
+
 * [Inter-process Communication](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc.html)
   * [**Signals**](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Signals.html)
     * [By default, how does a process react when it receives a signal?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Signal_summary.html)

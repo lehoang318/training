@@ -1,6 +1,7 @@
 # QNX - Session 3
 ## Threading & Synchronization
 * Creation: `pthread_create()`
+  * Sample application
   * [How do we customize the thread's attributes?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_attr_init.html)
 
     * Scheduling policy attribute
@@ -19,7 +20,9 @@
 * Termination
   * How do we detect a thread 's termination?
 * Priority & Scheduling Policy
+  * Default Scheduling Policy?
   * `SCHED_SPORADIC`
+  * `sched_yield()`
   * [Optional] [Real-time Linux](https://blogs.oracle.com/linux/post/task-priority)
 
     <details>
@@ -52,7 +55,6 @@
 
     </details>
 
-    
+## GDB
 
-## Socket
 
