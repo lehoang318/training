@@ -23,21 +23,24 @@ void* child_thread_func(void* arg) {
         return NULL;
     }
 
-    // Warning: not thread-safe!!!
     while (alive_flag) {
         time_t current_time;
+        struct tm time_info_buffer;
         struct tm* time_info;
-        char time_string[9];
+        char time_string[] = "HH:MM:SS";
 
         // Get current time
         time(&current_time);
-        time_info = localtime(&current_time);
+        time_info = localtime_r(&current_time, &time_info_buffer);
 
         // Format time as hh:mm:ss
-        strftime(time_string, sizeof(time_string), "%H:%M:%S", time_info);
-
-        // Print the timestamp
-        logi("Timestamp: %s\n", time_string);
+        if (time_info == NULL) {
+            loge("Failed to get local time.");
+        } else {
+            strftime(time_string, sizeof(time_string), "%H:%M:%S", time_info);
+            // Print the timestamp
+            logi("Timestamp: %s", time_string);
+        }
 
         // Sleep for 10 seconds
         sleep(10);

@@ -87,6 +87,8 @@
 
     * Note: [The eight special signals cannot be ignored or caught](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Special_signals.html).
 
+    * Ref: [Linux Signals: Signal Handlers](https://man7.org/training/download/lusp_sighandlers_slides.pdf)
+
   * [**Shared memory**](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/ipc_Shared_memory.html)
     > ... access to shared memory is in itself unsynchronized.
 

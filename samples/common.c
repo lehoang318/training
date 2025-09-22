@@ -35,7 +35,6 @@ char nibble2hex(int n) {
         c = ((n - 10) + 'A');
     }
 
-    printf("%d => %c\n", n, c);
     return c;
 }
 
@@ -53,7 +52,6 @@ void to_uppercase(char* str) {
 char * to_hex_string(const char* str) {
     size_t len = strlen(str) * 3;
 
-    printf("Message: `%s`\n", str);
     char * buffer = (char *)malloc(len);
 
     if (NULL == buffer) {
