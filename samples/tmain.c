@@ -3,17 +3,24 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <signal.h>
 #include <string.h>
 
+extern pthread_mutex_t mutex;
 extern void* child_thread_func(void* arg);
 
 int main() {
     pthread_t child_thread;
     char input[256];
+    int ret;
+
+    ret = pthread_mutex_lock(&mutex);
+    if (0 != ret) {
+        loge("Failed to lock mutex: %d!", ret);
+        return 1;
+    }
 
     // Create the child thread
-    if (pthread_create(&child_thread, NULL, child_thread_func, NULL) != 0) {
+    if (0 != pthread_create(&child_thread, NULL, child_thread_func, NULL)) {
         loge("Failed to create thread: %d!", errno);
         return 1;
     }
@@ -45,9 +52,9 @@ int main() {
             }
         } else if (input[0] == 'x') {
             logi("Informing the child thread ...\n");
-            // Send the SIGUSR1 signal to the specific child thread
-            if (pthread_kill(child_thread, SIGUSR1) != 0) {
-                loge("Failed to send `SIGUSR1` to the child thread: %d!", errno);
+            ret = pthread_mutex_unlock(&mutex);
+            if (0 != ret) {
+                loge("Failed to release mutex: %d!", ret);
                 return 1;
             }
 

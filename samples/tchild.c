@@ -1,29 +1,18 @@
 #include "common.h"
 
 #include <errno.h>
+#include <pthread.h>
 #include <signal.h>   // For signal handling functions (signal, sigaction)
 #include <time.h>
-#include <unistd.h>   // For sleep
 
-// Global flag to control the child thread's execution
-static volatile sig_atomic_t alive_flag = 0;
-
-// Signal handler function for SIGUSR1
-void sigusr1_handler(int signum) {
-    alive_flag = 0;
-}
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Thread function for the child thread
 void* child_thread_func(void* arg) {
-    alive_flag = 1;
+    struct timespec ts;
+    int ret = 1;
 
-    if (SIG_ERR == signal(SIGUSR1, sigusr1_handler)) {
-        loge("Cannot register SIGUSR1 handler: %d!", errno);
-        alive_flag = 0;
-        return NULL;
-    }
-
-    while (alive_flag) {
+    while (0 != ret) {
         time_t current_time;
         struct tm time_info_buffer;
         struct tm* time_info;
@@ -42,11 +31,29 @@ void* child_thread_func(void* arg) {
             logi("Timestamp: %s", time_string);
         }
 
-        // Sleep for 10 seconds
-        sleep(10);
-    }
-    logi("Child thread terminating.\n");
+        /* Get the current time */
+        if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+            loge("Failed to get time: %d!", errno);
+            return NULL;
+        }
 
-    alive_flag = 0;
+        /* Add 10 seconds to the current time to set the timeout */
+        ts.tv_sec += 10;
+        ret = pthread_mutex_timedlock(&mutex, &ts);
+    }
+
+    ret = pthread_mutex_unlock(&mutex);
+    if (0 != ret) {
+        loge("Failed to release mutex: %d!", ret);
+        return NULL;
+    }
+
+    ret = pthread_mutex_destroy(&mutex);
+    if (0 != ret) {
+        loge("Failed to destroy mutex: %d!", ret);
+    }
+
+    logi("Terminating ...\n");
+
     return NULL;
 }
