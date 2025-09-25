@@ -16,5 +16,9 @@ threads: tmain.c tchild.c common.c
 	gcc -Wall -g -D _GNU_SOURCE -c tmain.c tchild.c common.c
 	gcc -o threads.bin tmain.o tchild.o common.o -lpthread
 
+sync: sync.c
+	gcc -Wall -g -c sync.c
+	gcc -o sync.bin sync.o
+
 clean:
 	rm -f *.o *.map *.bin

@@ -13,6 +13,15 @@
   * With solution #3
     * How do we handle the terminations of the two threads?
 
+  * Give it a try!!!
+    ```
+    $ make threads
+    gcc -Wall -g -D _GNU_SOURCE -c tmain.c tchild.c common.c
+    gcc -o threads.bin tmain.o tchild.o common.o -lpthread
+
+    $ ./threads.bin
+    ```
+
 * [How do we create a thread?](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_create.html)
   ```
   #include <pthread.h>
@@ -74,7 +83,6 @@
         * Priority order: `SCHED_DEADLINE > SCHED_RR/SCHED_FIFO > SCHED_OTHER > SCHED_BATCH > SCHED_IDLE`
 
       * [List all threads with priorities](https://gitlab.com/procps-ng/procps/-/issues/111#note_105333538)
-
         ```
         $ ps -m -p 159 -o pid,tid,class,pri_baz,rtprio,ni,state,comm
           PID     TID CLS BAZ RTPRIO  NI COMMAND
@@ -93,6 +101,22 @@
 
 ## Synchronization
 * [Mutexes](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/kernel_Mutexes.html)
+  * Sample application
+    ```
+    $ make sync
+    gcc -Wall -g -c sync.c
+    gcc -o sync.bin sync.o
+
+    $ sync.bin 0
+      SYNC OFF!!!
+      ...
+
+    $ sync.bin 1
+      SYNC ON!!!
+      ...
+
+    ```
+
   * [Attributes](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_init.html)
     ```
     #include <pthread.h>
@@ -115,6 +139,10 @@
     int pthread_mutex_destroy( pthread_mutex_t* mutex);
     ```
 
+    * What would happen if
+      * A thread tries to lock a mutex multiple times without unlock the mutex?
+      * A thread tries to unlock a mutex which is not locked or owned by another thread?
+      * The owner of a mutex terminates without unlocking the mutex?
 
   * [Priority-inversion](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_setprotocol.html)
     | Time | Thread A (eff. priority: N) | Thread B (eff. priority: M) | Remark |
@@ -123,7 +151,11 @@
     | t1 | Do something | pthread_mutex_lock(&mutex_X) | B shall be blocked. <br> If M > N, eff. priority of A shall be raised. |
     | t2 | pthread_mutex_unlock(&mutex_X) | <being blocked> | B shall be unblocked then becomes new owner of mutex_X. <br> Effective priority of A shall be adjusted. |
 
+    * What would happen if `M` is beyond priority ability of A?
+    * Priority ceiling
+
   * [PTHREAD_PROCESS_SHARED vs PTHREAD_PROCESS_PRIVATE](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_getpshared.html)
+    * What would happen if a thread from another process tries to lock a `PTHREAD_PROCESS_PRIVATE` mutex?
 
 * [Semaphores](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/kernel_Semaphores.html)
   > A key advantage of semaphores over mutexes is that semaphores are defined to operate between processes.
@@ -169,3 +201,5 @@
     4. ...
 
   * [Example which employs Shared Memory and Unnamed Semaphores](https://man7.org/linux/man-pages/man3/shm_open.3.html)
+
+* Lock-free Synchronization
