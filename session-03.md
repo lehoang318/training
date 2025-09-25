@@ -76,11 +76,8 @@
       * [List all threads with priorities](https://gitlab.com/procps-ng/procps/-/issues/111#note_105333538)
 
         ```
-        $ ps -em -o pid,tid,class,pri_baz,rtprio,ni,comm
+        $ ps -m -p 159 -o pid,tid,class,pri_baz,rtprio,ni,state,comm
           PID     TID CLS BAZ RTPRIO  NI COMMAND
-          158       - -     -      -   - systemd-resolve
-          -       158 TS  120      -   0 -
-
           159       - -     -      -   - systemd-timesyn
           -       159 TS  120      -   0 -
           -       163 TS  120      -   0 -
@@ -120,6 +117,11 @@
 
 
   * [Priority-inversion](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_setprotocol.html)
+    | Time | Thread A (eff. priority: N) | Thread B (eff. priority: M) | Remark |
+    |:---:|---|---|---|
+    | t0 | pthread_mutex_lock(&mutex_X) | Do something | mutex_X (PTHREAD_PRIO_INHERIT) is not locked <br> => A becomes mutex_X owner. |
+    | t1 | Do something | pthread_mutex_lock(&mutex_X) | B shall be blocked. <br> If M > N, eff. priority of A shall be raised. |
+    | t2 | pthread_mutex_unlock(&mutex_X) | <being blocked> | B shall be unblocked then becomes new owner of mutex_X. <br> Effective priority of A shall be adjusted. |
 
   * [PTHREAD_PROCESS_SHARED vs PTHREAD_PROCESS_PRIVATE](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_getpshared.html)
 
