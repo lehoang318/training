@@ -20,5 +20,9 @@ sync: sync.c
 	gcc -Wall -g -D _GNU_SOURCE -c sync.c
 	gcc -o sync.bin sync.o
 
+deadlock: deadlock.c
+	gcc -Wall -g -D _GNU_SOURCE -c deadlock.c common.c
+	gcc -o deadlock.bin deadlock.o common.o
+
 clean:
 	rm -f *.o *.map *.bin

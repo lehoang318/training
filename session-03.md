@@ -157,6 +157,26 @@
   * [PTHREAD_PROCESS_SHARED vs PTHREAD_PROCESS_PRIVATE](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/pthread_mutexattr_getpshared.html)
     * What would happen if a thread from another process tries to lock a `PTHREAD_PROCESS_PRIVATE` mutex?
 
+  * Deadlock
+    * When will it happen?
+      * Circular Wait
+      * Relock a `PTHREAD_MUTEX_NORMAL` mutex
+    * Sampple application
+      ```
+      $ make deadlock
+      gcc -Wall -g -D _GNU_SOURCE -c deadlock.c common.c
+      gcc -o deadlock.bin deadlock.o common.o
+
+      $ ./deadlock.bin
+      ...
+      ```
+
+    * P-Recommendation
+      * To avoid nested locks
+      * Timeout mechanism for Loops/Waits
+      * Threads & Shared Resources should be carefully managed (ex: matrix tables with argumentations, ...)
+      * [MISRA] `A function shall have a single point of exit at the end of the function.`
+
 * [Semaphores](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.sys_arch/topic/kernel_Semaphores.html)
   > A key advantage of semaphores over mutexes is that semaphores are defined to operate between processes.
   * [Unamed Semaphore](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/s/sem_init.html)
